@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tách PDF Hợp Đồng</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>📄 Công cụ Tách PDF</h1>
+    <form id="splitForm" method="post" enctype="multipart/form-data" action="/split">
+      <label>👤 Tên của bạn:</label>
+      <input type="text" name="username" placeholder="Nhập tên..." required><br><br>
+
+      <label>📂 Chọn file PDF gốc:</label>
+      <input type="file" name="pdf_file" accept=".pdf" required><br><br>
+
+      <label>📝 Chọn file TXT (danh sách tên):</label>
+      <input type="file" name="names_file" accept=".txt" required><br><br>
+
+      <label>📑 Số trang mỗi file:</label>
+      <input type="number" name="pages_per_file" value="1" min="1" required><br><br>
+
+      <button type="submit">🚀 Tách PDF</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById("splitForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const res = await fetch("/split", { method: "POST", body: formData });
+      const data = await res.json();
+
+      const resultDiv = document.getElementById("result");
+      if (data.status === "success") {
+        resultDiv.innerHTML = `
+          <h3>✅ ${data.message}</h3>
+          <button id="downloadBtn">⬇️ Tải file ZIP</button>
+        `;
+        document.getElementById("downloadBtn").addEventListener("click", () => {
+          window.location.href = "/download_zip";
+        });
+      } else {
+        resultDiv.innerHTML = `<p>❌ ${data.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
