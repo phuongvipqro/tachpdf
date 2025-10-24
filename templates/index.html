@@ -3,108 +3,185 @@
 <head>
   <meta charset="UTF-8">
   <title>Tách PDF Hợp Đồng</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <!-- Font Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* Style cho progress bar */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #7F00FF, #E100FF, #00C9FF);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+      overflow: hidden;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      width: 420px;
+      text-align: center;
+      animation: fadeIn 1s ease;
+      color: #333;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #111;
+    }
+    label {
+      font-size: 15px;
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 500;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    /* Màu riêng cho từng input */
+    input[name="username"] {
+      background: #e3f2fd; /* xanh nhạt */
+    }
+    input[name="pdf_file"] {
+      background: #f3e5f5; /* tím nhạt */
+    }
+    input[name="names_file"] {
+      background: #fce4ec; /* hồng nhạt */
+    }
+    input[name="pages_per_file"] {
+      background: #fff3e0; /* cam nhạt */
+    }
+    input:focus {
+      box-shadow: 0 0 10px #2196f3;
+      transform: scale(1.02);
+    }
+    button {
+      background: linear-gradient(45deg, #ff6b6b, #f06595);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    /* Progress */
     #progressContainer {
       display: none;
       margin-top: 20px;
       width: 100%;
-      max-width: 400px;
-    }
-    #progressBar {
-      width: 0%;
-      height: 25px;
-      background: #4caf50;
-      text-align: center;
-      color: white;
-      line-height: 25px;
-      border-radius: 5px;
-      transition: width 0.4s ease;
     }
     #progressWrapper {
       background: #eee;
-      border-radius: 5px;
+      border-radius: 10px;
       overflow: hidden;
+    }
+    #progressBar {
+      width: 0%;
+      height: 30px;
+      background: linear-gradient(90deg, #4caf50, #00c6ff);
+      text-align: center;
+      color: white;
+      line-height: 30px;
+      border-radius: 10px;
+      transition: width 0.4s ease;
+      font-weight: bold;
+    }
+    #result h3, #result p {
+      margin-top: 15px;
+      font-size: 16px;
+    }
+    /* Icon động */
+    .floating-icon {
+      position: absolute;
+      font-size: 2.5rem;
+      opacity: 0.35;
+      animation: float 6s ease-in-out infinite;
+    }
+    .floating-icon i {
+      animation: pulse 2s infinite;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+    @keyframes float {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(15deg); }
+      100% { transform: translateY(0) rotate(0deg); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.7; }
+    }
+    .credit {
+      position: fixed;
+      right: 15px;
+      bottom: 10px;
+      font-size: 12px;
+      color: #eee;
+      opacity: 0.7;
+      z-index: 5;
     }
   </style>
 </head>
 <body>
+  <!-- Icon động -->
+  <div class="floating-icon left-10 top-10" style="color:#ff5722"><i class="fa-solid fa-circle-nodes"></i></div>
+  <div class="floating-icon right-20 top-16" style="color:#ffc107"><i class="fa-solid fa-bolt-lightning"></i></div>
+  <div class="floating-icon left-1/3 bottom-10" style="color:#4caf50"><i class="fa-solid fa-star"></i></div>
+  <div class="floating-icon right-1/4 bottom-20" style="color:#03a9f4"><i class="fa-solid fa-music"></i></div>
+  <div class="floating-icon left-1/4 top-1/2" style="color:#e91e63"><i class="fa-solid fa-heart"></i></div>
+  <div class="floating-icon right-1/3 top-1/4" style="color:#9c27b0"><i class="fa-solid fa-moon"></i></div>
+  <div class="floating-icon left-1/2 bottom-1/3" style="color:#8bc34a"><i class="fa-solid fa-leaf"></i></div>
+  <div class="floating-icon right-10 bottom-8" style="color:#00bcd4"><i class="fa-solid fa-sparkles"></i></div>
+  <div class="floating-icon left-20 bottom-16" style="color:#ff9800"><i class="fa-solid fa-crown"></i></div>
+  <div class="floating-icon right-40 top-1/3" style="color:#f44336"><i class="fa-solid fa-camera"></i></div>
+
   <div class="container">
-    <h1>📄 Công cụ Tách PDF</h1>
+    <h1><i class="fa-solid fa-file-contract" style="color:#7b1fa2"></i> Công cụ Tách PDF</h1>
     <form id="splitForm" method="post" enctype="multipart/form-data" action="/split">
-      <label>👤 Tên của bạn:</label>
-      <input type="text" name="username" placeholder="Nhập tên..." required><br><br>
+      <label><i class="fa-solid fa-user" style="color:#2196f3"></i> Tên của bạn:</label>
+      <input type="text" name="username" placeholder="Nhập tên..." required>
 
-      <label>📂 Chọn file PDF gốc:</label>
-      <input type="file" name="pdf_file" accept=".pdf" required><br><br>
+      <label><i class="fa-solid fa-file-pdf" style="color:#d32f2f"></i> Chọn file PDF gốc:</label>
+      <input type="file" name="pdf_file" accept=".pdf" required>
 
-      <label>📝 Chọn file TXT (danh sách tên):</label>
-      <input type="file" name="names_file" accept=".txt" required><br><br>
+      <label><i class="fa-solid fa-file-lines" style="color:#f06292"></i> Chọn file TXT (danh sách tên):</label>
+      <input type="file" name="names_file" accept=".txt" required>
 
-      <label>📑 Số trang mỗi file:</label>
-      <input type="number" name="pages_per_file" value="1" min="1" required><br><br>
+      <label><i class="fa-solid fa-layer-group" style="color:#ff9800"></i> Số trang mỗi file:</label>
+      <input type="number" name="pages_per_file" value="1" min="1" required>
 
-      <button type="submit">🚀 Tách PDF</button>
+      <button type="submit"><i class="fa-solid fa-rocket"></i> Tách PDF</button>
     </form>
 
-    <!-- Thanh progress -->
+    <!-- Progress -->
     <div id="progressContainer">
       <div id="progressWrapper">
         <div id="progressBar">0%</div>
       </div>
     </div>
-
     <div id="result"></div>
   </div>
 
-  <script>
-    const form = document.getElementById("splitForm");
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
-    const resultDiv = document.getElementById("result");
-
-    function fakeProgress() {
-      let width = 0;
-      progressBar.style.width = "0%";
-      progressBar.textContent = "0%";
-      const interval = setInterval(() => {
-        if (width >= 90) {
-          clearInterval(interval);
-        } else {
-          width += 10;
-          progressBar.style.width = width + "%";
-          progressBar.textContent = width + "%";
-        }
-      }, 400); // mỗi 0.4s tăng 10%
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      progressContainer.style.display = "block";
-      resultDiv.innerHTML = "";
-      fakeProgress();
-
-      const formData = new FormData(form);
-      const res = await fetch("/split", { method: "POST", body: formData });
-      const data = await res.json();
-
-      if (data.status === "success") {
-        progressBar.style.width = "100%";
-        progressBar.textContent = "100%";
-        resultDiv.innerHTML = `
-          <h3>✅ ${data.message}</h3>
-          <button id="downloadBtn">⬇️ Tải file ZIP</button>
-        `;
-        document.getElementById("downloadBtn").addEventListener("click", () => {
-          window.location.href = "/download_zip";
-        });
-      } else {
-        progressBar.style.background = "red";
-        progressBar.textContent = "Lỗi";
-        resultDiv.innerHTML = `<p>❌ ${data.message}</p>`;
-      }
-    });
-  </script>
+  <div class="credit">design by <b>TrongPhuong</b></div>
 </body>
 </html>
