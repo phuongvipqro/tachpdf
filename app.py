@@ -9,14 +9,14 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config["UPLOAD_FOLDER"] = "uploads"
-app.config["OUTPUT_FOLDER"] = "outputs"  # chỉ dùng để lưu log
+app.config["OUTPUT_FOLDER"] = "outputs"
 
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 os.makedirs(app.config["OUTPUT_FOLDER"], exist_ok=True)
 
 LOG_FILE = os.path.join(app.config["OUTPUT_FOLDER"], "log.txt")
 
-# Bộ nhớ tạm để giữ zip cuối cùng
+# Bộ nhớ tạm để giữ ZIP cuối cùng
 LAST_ZIP = {}
 
 def write_log(username, action, details):
@@ -37,10 +37,13 @@ def index():
 @app.route("/split", methods=["POST"])
 def split_pdf():
     try:
-        pdf_file = request.files["pdf_file"]
-        names_file = request.files["names_file"]
-        pages_per_file = int(request.form["pages_per_file"])
+        pdf_file = request.files.get("pdf_file")
+        names_file = request.files.get("names_file")
+        pages_per_file = int(request.form.get("pages_per_file", 1))
         username = request.form.get("username", "Ẩn danh")
+
+        if not pdf_file or not names_file:
+            return jsonify({"status": "error", "message": "Thiếu file PDF hoặc TXT!"})
 
         # Lưu file upload
         pdf_path = os.path.join(app.config["UPLOAD_FOLDER"], secure_filename(pdf_file.filename))
@@ -48,7 +51,7 @@ def split_pdf():
         pdf_file.save(pdf_path)
         names_file.save(names_path)
 
-        # Phát hiện encoding của file names.txt để tránh lỗi
+        # Phát hiện encoding của file names.txt
         with open(names_path, "rb") as raw:
             raw_data = raw.read()
             result = chardet.detect(raw_data)
